@@ -3,8 +3,14 @@ import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { MealPlan, ChatProcessResult } from "../types";
 
 // Initialize Gemini Client
-// Assumption: process.env.API_KEY is pre-configured and valid.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// We use a safe fallback to prevent the entire app from crashing (White Screen)
+// if the API Key is missing. The API calls will simply fail with a clear error.
+const apiKey = process.env.API_KEY || "";
+if (!apiKey) {
+  console.warn("API_KEY is missing. Please check your Vercel Environment Variables.");
+}
+
+const ai = new GoogleGenAI({ apiKey });
 
 const MACRO_SUMMARY_SCHEMA: Schema = {
   type: Type.OBJECT,
@@ -69,6 +75,9 @@ const CHAT_SCHEMA: Schema = {
 };
 
 export const generateMealPlan = async (calories: number, exclusions: string): Promise<MealPlan> => {
+  if (!apiKey) {
+     throw new Error("API Key is missing. Please configure it in Vercel Settings.");
+  }
   const model = "gemini-2.5-flash";
 
   const prompt = `
@@ -144,6 +153,9 @@ export const processChat = async (
   currentCalories: number, 
   currentExclusions: string
 ): Promise<ChatProcessResult> => {
+  if (!apiKey) {
+     return { reply: "System Error: API Key missing. Please check Vercel settings." };
+  }
   const model = "gemini-2.5-flash";
 
   const prompt = `
