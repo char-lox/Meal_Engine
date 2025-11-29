@@ -1,0 +1,5 @@
+{
+  "name": "Annie's Meal Planning Engine",
+  "description": "A strict, protocol-based meal planning calculation engine using the Gemini API. optimized for 40/30/30 macro splits.",
+  "requestFramePermissions": []
+}
